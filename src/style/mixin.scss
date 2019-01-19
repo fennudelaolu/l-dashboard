@@ -1,0 +1,63 @@
+
+/*适配*/
+@mixin border-radius ($length){
+  -moz-border-radius:$length;
+  -ms-border-radius:$length;
+  -o-border-radius:$length;
+  -webkit-border-radius:$length;
+  border-radius:$length;
+}
+
+@mixin box-sizing ($type){
+  -o-border-radius:$type;
+  -ms-border-radius:$type;
+  -moz-box-sizing:$type; /* Firefox */
+  -webkit-box-sizing:$type; /* Safari */
+  box-sizing:$type; /* Safari */
+}
+
+@mixin shadow ($x, $y, $blur, $color) {
+  -moz-box-shadow: $x $y $blur $color;
+  -webkit-box-shadow: $x $y $blur $color;
+  box-shadow: $x $y $blur $color;
+}
+
+@mixin user-select ($opt){
+  -webkit-user-select:$opt;
+  -moz-user-select:$opt;
+  -ms-user-select:$opt;
+  user-select:$opt;
+}
+@mixin opacity($val) {//val取值0--1
+  filter:alpha(opacity = calc(#{$val} * 10) );
+  -moz-opacity:$val;
+  -khtml-opacity: $val;
+  opacity: $val;
+}
+
+  @mixin size ( $w , $h ){
+    width:$w;
+    height:$h;
+  }
+  /*按钮配置*/
+  @mixin button ($class-name,$width,$height){
+    #{$class-name}{
+      width:$width;
+      height:$height;
+      cursor: pointer;
+      background: #1976D2;
+      color:#fff;
+      font-size: 16px;
+      border-radius: 3px;
+      text-align: center;
+      line-height: $height;
+    }
+    #{$class-name}:hover{
+
+      background:#4F95DA ;
+    }
+    #{$class-name}:active{
+      border-width: 2px;
+    }
+  }
+

@@ -1,0 +1,78 @@
+@import 'base';
+@import 'mixin';
+/*变量********************************/
+$color-blue0:#1881DC;
+$color-blue1: #5182E4;
+$g-c-green0:#0F9D58;
+$color_gray0:#DFDFDF;
+
+/*组件**************************************************/
+/*基本布局*/
+$m_t_height:64px;
+$m_t_bc:#363D3F;
+.layout{
+  @include size(100%,100%);
+  &-header{
+    @include size(100%,$m_t_height);
+    background-color: $m_t_bc;
+    color:#fff;
+    font-size: 16px;
+  }
+
+  &-section{
+    position: relative;
+    /*overflow:hidden;*/
+    @include size(100%, calc(100% - 64px));
+
+  }
+}
+
+$m_logo_width:48px;
+.m-logo{
+  @include size($m_logo_width,$m_t_height);
+  padding: 20px 15px;
+
+  background-color: #057FD9;
+  color:#fff;
+  &-img{
+    @include size(20px,20px);
+  }
+}
+
+
+/*全局基础样式**************************************************/
+.icon1 {
+  width: 10px;
+  height: 10px;
+}
+.icon2 {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+
+
+.g-fr{float:right;}
+.g-fl{float:left;}
+
+
+.f-12{
+  font-size: 12px;
+}
+.f-14{
+  font-size: 14px;
+}
+.f-16{
+  font-size: 16px;
+}
+.f-b{
+  font-weight: bold;
+}
+
+.no-select{
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+}

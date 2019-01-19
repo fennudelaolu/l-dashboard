@@ -1,0 +1,28 @@
+html,body, #app{
+  font-family: "微软雅黑";
+
+  height: 100%;
+  width: 100%;
+}
+
+html, body, #app,h1, h2, h3, h4, h5, h6, div, dl, dt, dd, ul, ol, li, p, blockquote, pre, hr, figure, table, caption, th, td, form, fieldset, legend, input, button, select, textarea, menu {
+  margin: 0;
+  padding: 0;
+}
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+
+  font-size:14px;
+}
+
+ul li {
+  list-style: none;
+}
+
+a {
+  text-decoration:none;
+}
