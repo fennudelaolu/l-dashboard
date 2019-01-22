@@ -1,11 +1,12 @@
 <template>
   <div class="data-source">
     <aside class="data-source-aside">
-      <M_Aside1 :list="aside_tree" @create="createF" @delete="del_ready" @openFile="openFile"></M_Aside1>
+      <M_Aside1 :list="aside_tree"
+                @create="createF" @delete="del_ready" @openFile="openFile" @refreshTree="init"></M_Aside1>
     </aside>
     <section class="data-source-section">
       <excel-uploader v-if="view === view_type.upload" :folder_tree="aside_tree" :target_folder="target_folder" @endUpdata="endUpdata"></excel-uploader>
-      <TableView v-else-if="view === view_type.read_table" :table_data="table_data"></TableView>
+      <TableView  v-else-if="view === view_type.read_table" :table_data="table_data"></TableView>
     </section>
 
     <!--删除文件/文件夹对话框-->
@@ -85,18 +86,22 @@
       methods:{
         async init(){
 
-          this.create_folder_form = {
-            show:false,
-            loading: false,
-            name:'',
-          }
-          //获取左侧目录
+          //刷新左侧目录
           let r = await DATA_MANAGER_API.findTree();
           if(r.data.code == 200){
             this.aside_tree = r.data.data || null
           } else {
             this.aside_tree = null
           }
+          //初始化页面变量
+          this.create_folder_form = {
+            show:false,
+            loading: false,
+            name:'',
+          }
+          this.view = 0;
+          this.table_data = []
+
         },
         setViewType(type){
           this.view = type;
@@ -173,7 +178,7 @@
 
         /*------上传组件-----*/
         endUpdata(data){
-
+          this.init();
         },
 
         // todo 多线程上传

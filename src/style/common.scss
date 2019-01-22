@@ -76,3 +76,9 @@ $m_logo_width:48px;
   -ms-user-select:none;
   user-select:none;
 }
+
+.g-nowrap{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

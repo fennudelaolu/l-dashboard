@@ -41,7 +41,7 @@
             left: left + 'px',
             top: top + 'px',
             'z-index': z ,
-            border:this.isActive? '1px dashed ' : '0px dashed ',
+            border:this.isActive? '1px dashed #aaa' : '0px dashed ',
             background:background,
             //'background-color':'#aaa'
           }
@@ -61,7 +61,6 @@
   .mdragble-item{
     position:absolute;
     cursor: move;
-    background-color: #4F95DA;
 
     //缩放按钮
     &-bar{
@@ -70,9 +69,9 @@
       bottom:-3px;
       width:0;
       height:0;
-      border-right: 5px solid;
-      border-bottom: 5px solid;
-      cursor: se-resize
+      border-right: 5px solid #aaa;
+      border-bottom: 5px solid #aaa;
+      cursor: se-resize;
     }
   }
 </style>

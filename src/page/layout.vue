@@ -19,24 +19,26 @@
           <div class="logo1-title"> XX有数</div>
         </a>
         <ul class="frame-nav">
-          <li class="frame-nav-left" @click="goPage('图表列表')">图表</li>
+
+          <!--<li class="frame-nav-left" @click="goPage('图表列表')">图表</li>-->
+
           <li class="frame-nav-left" @click="goPage('大屏幕列表')">大屏幕</li>
           <li class="frame-nav-left" @click="goPage('数据表')">数据表</li>
         </ul>
         <ul class="frame-nav">
+
           <li class="frame-dropdown">
 
-            <div class="frame-dropdown">
-              <div class="frame-dropdown-rel" >
-                779244911@qq.com
-                <svg  style="width: 10px;height: 10px;">
-                  <use href="#arrow1_down"  fill="#3FA9F5"></use>
-                </svg>
+              <div @click="logout" class="frame-dropdown-rel" >
+                {{user.email}}
+                <M_Icon style="position: relative;top: 5px;"  type="#icon_exit"  :size="18" :color="'#fff'"  ></M_Icon>
               </div>
 
-              <ul class="frame-dropdown-menu">
-                <li class="frame-dropdown-item" @click="logout">退出</li>
-              </ul>
+
+
+          </li>
+          <li class="frame-dropdown">
+            <div @click="logout" class="frame-dropdown-rel" >
 
             </div>
           </li>
@@ -61,12 +63,21 @@
         return {
         }
       },
+      mounted(){
+
+      },
       methods:{
         logout(){
           LOGIN_API.logout();
         },
         goPage(name){
           this.$router.push({ name, params: {  }})
+        }
+      },
+      computed:{
+        user(){
+          let user = this.$store.getters[this.$store_type.USER] || {}
+          return user
         }
       }
     }
@@ -132,7 +143,7 @@
   }
 
   .frame-dropdown-rel {
-    padding:23px 16px ;
+    padding:20px 16px ;
     text-align: center;
     color: #fff;
 
@@ -159,10 +170,5 @@
     background-color: #aaa;
     @include opacity(0.2);
   }
-
-
-
-
-
 
 </style>

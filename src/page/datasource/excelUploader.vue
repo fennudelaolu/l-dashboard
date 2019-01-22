@@ -16,12 +16,9 @@
       <uploader v-if="current == 0 " :options="options" @file-added="initFile" :autoStart="false" class="uploader-example">
         <uploader-unsupport></uploader-unsupport>
         <uploader-drop style="text-align: center">
-
           <uploader-btn :attrs="attrs" :single="true" >点击上传文件1</uploader-btn>或拖拽上传
-          <div style="text-align: center">支持Excel文件（单个Excel最大100M，CSV最大200M）</div>
-
-          <div style="text-align: center">默认识别第一个sheet文件</div>
-          <!--<Progress  :percent="read_percent" status="active" />-->
+          <div v-show="!isReading" style="text-align: center">支持Excel文件（单个Excel最大100M，CSV最大200M）</div>
+          <div style="text-align: center">{{isReading?'读取中...':'默认识别第一个sheet文件'}}</div>
         </uploader-drop>
         <uploader-list></uploader-list>
       </uploader>
@@ -29,7 +26,7 @@
       <Tabs v-else-if="current == 1 " type="card" style="width: 100%;height: 100%;" >
         <TabPane  v-for="(sheet, s_i) in xls_view_data" :key="s_i" :label="s_i"  style="width: 100%;height: 100%;" >
 
-          <TableView :table_data="sheet"></TableView>
+          <TableView :table_data="sheet" :max_row="1000"></TableView>
 
           </TabPane>
       </Tabs>
@@ -71,8 +68,30 @@
       <Button  type="default" v-else-if="current == 2" @click="lastStep()">上一步</Button>
       <div style="width: 100px;height: 20px;display: inline-block"></div>
       <Button  type="info" v-if="current == 1" @click="current=2">下一步</Button>
-      <Button  type="info" v-if="current == 2" @click="uploadData()">上传</Button>
+      <Button  type="info" v-if="current == 2" @click="createTableAndReadyUpload()">上传</Button>
+
     </footer>
+
+    <Modal
+      v-model="up_current_modal.show" :closable="false" :mask-closable="false"
+      :title="up_status==='end'? '上传进度':'上传中...'">
+
+      <div v-for="(item, i ) in up_current_modal.up_mesage" :key="i" style="padding: 4px 0px">
+        <span>
+
+        <i-circle :percent="Math.ceil((item.send_count / item.count)*100)" :size="16" :stroke-width="24" :stroke-color="up_table_status_color[item.status]">
+
+        </i-circle>
+        </span>
+        <span>/ {{item.folder_name}}</span>
+        <span>/ {{item.table_name}}</span>
+
+      </div>
+
+      <div slot="footer">
+        <Button @click="closeUp">{{up_status==='end'? '关闭':'取消'}}</Button>
+      </div>
+    </Modal>
 
   </div>
 </template>
@@ -80,7 +99,7 @@
 <script>
   import XLSX from 'xlsx'
   import TableView from './TableView'
-
+  import HelloWebWorker from 'hello-webworker'
   import {DATA_MANAGER_API} from '../../server/api'
 
 
@@ -103,15 +122,32 @@
     },
     data () {
       return {
-
         current:0,
 
-        act_form_index:0,
+        //设置表位置、名称等
         up_form:[
           {}
         ],
+        //控制form选项卡
+        act_form_index:0,
+        //当前所有上传线程（一个表一个）
+        up_workers:[],
+        //上传进度对话框
+        up_current_modal:{
+          show:false,
+          up_mesage:[],
+        },
+        //上传状态
+        up_status:'',
+        //每个表上传状态对应的进度条颜色
+        up_table_status_color:{
+          uploading:'#43A3FB',
+          success:'#5cb85c',
+          error: '#ff5500'
+        },
 
 
+        //读取文件配置
         XLS_TYPE: 'application/vnd.ms-excel',
         XLSX_TYPE:  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         FILE_SIZE: 1024 * 1024 * 1024,
@@ -123,7 +159,6 @@
 
         isReading:false,
         readTimer:'',
-        read_percent:0,
 
         //上传文件配置
         options: {
@@ -135,7 +170,6 @@
         attrs: {
           accept: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel']
         },
-
 
       }
     },
@@ -150,7 +184,7 @@
       /*--------------------For vue-simple-uploader-----------------*/
       //选择文件
       initFile(file){
-
+        this.isReading = true;
         let is_can_up = this.isCanUploader (file);
         this.file_name = file.name;
 
@@ -244,9 +278,10 @@
       },
       //上传已读取文件数据
       //todo 需要多线程支持
-      async uploadData(){
+      async createTableAndReadyUpload(){
 
         let data = this.xls_view_data;
+        let upworker_json_data = []
         for(let sheet_key in data){
           let head = data[sheet_key].head
           let columns = {}
@@ -263,34 +298,63 @@
           })
           if(r.data.code == 200) {
 
-            let up_size = 5; //一次上传条数
-            let up_retry_count = 3;//失败重试次数
-            let up_threed = 1;//同时上传线程
-
             let up_data = data[sheet_key].data
 
-            let rr = await DATA_MANAGER_API.inputData({
+            upworker_json_data.push({
               folder_name: this.up_form[sheet_key].folder_name || '未分组',
               table_name: this.up_form[sheet_key].table_name,
               up_data,
             })
-
-           console.log(rr)
-
           }
         }
 
+        this.uploadData(upworker_json_data)
+
       },
-      endUpdata(){
-        let data = {
-          create:['table1','table2'],
-          up_data:['table1','table2']
+      uploadData(upworker_json_data){
+        let _this = this;
+        this.up_current_modal.show = true;
+        let  worker = new Worker('/static/up_plugin/main.js');
+        worker.postMessage({
+          method:'readyUpload',
+          args:{
+            url:DATA_MANAGER_API.inputData_url,
+            method:'POST',
+            token:_this.user_token,
+            json_data:upworker_json_data
+          }});
+        worker.onmessage = function (event) {
+          let data = event.data;
+          let status = data.status;
+          _this.up_status =status
+          switch (status) {
+            case 'working': break;
+            case 'end': worker.terminate();break;
+          }
+          _this.up_current_modal.up_mesage = data.message || [];
+          console.log(_this.up_current_modal.up_mesage)
         }
-        this.$emit('endUpdata',data)
+        this.up_workers.push(worker)
+      },
+      //关闭上传
+      closeUp(){
+        for(let i in this.up_workers){
+          this.up_workers[i].terminate();
+        }
+        this.up_workers = [];
+        this.up_current_modal={
+          show:false,
+          up_mesage:[]
+        }
+        this.$emit('endUpdata',{});
       }
 
     },
     computed:{
+      user_token(){
+        let user = this.$store.getters[this.$store_type.USER] || {}
+        return user.token || ''
+      },
       xls_view_data(){
         let _xlsx_info = Object.assign({},this.xlsx_info );
 
@@ -345,21 +409,6 @@
       }
     },
     watch:{
-      //todo 需要多线程支持
-      isReading(val,oldval){
-        /*if(val){
-          let _this = this;
-          this.readTimer=setInterval(()=>{
-            _this.read_percent += 1
-            if(_this.read_percent > 98 ){
-              clearTimeout(_this.readTimer)
-            }
-          },500)
-        } else {
-          clearTimeout(this.readTimer);
-          this.read_percent = 0
-        }*/
-      },
 
     }
   }

@@ -13,8 +13,13 @@
         option:{
           type:Object,
           default: {
-            w: 100,
-            h: 100,
+            style:{
+              width: 100,
+              height: 100,
+              background:'',
+              'background-color': '',
+            },
+
             have_border: true
           }
         }
@@ -76,13 +81,13 @@
           this.active_item = {
             w: act_node.offsetWidth ,
             h: act_node.offsetHeight,
-            max_w:this.option.w - act_node.offsetLeft,
-            max_h:this.option.h - act_node.offsetTop,
+            max_w:this.option.style.width - act_node.offsetLeft,
+            max_h:this.option.style.height - act_node.offsetTop,
 
             left: act_node.offsetLeft ,
             top: act_node.offsetTop,
-            max_left:this.option.w - act_node.offsetWidth,
-            max_top:this.option.h - act_node.offsetHeight,
+            max_left:this.option.style.width - act_node.offsetWidth,
+            max_top:this.option.style.height - act_node.offsetHeight,
 
           }
           this.active_index = act_node.getAttribute('item_index');
@@ -129,12 +134,15 @@
 
       computed:{
         box_style(){
-          let w = this.option.w || 100;
-          let h = this.option.h || 100;
+          let w = this.option.style.width || 100;
+          let h = this.option.style.height || 100;
           let have_border = this.option.have_border || true;
+
           return {
             width: w + 'px',
             height: h  + 'px',
+            background: this.option.background || this.option.style.background_color,
+            'background-color': this.option.style.background_color,
             border: have_border ? '1px solid' : ''
           }
         }

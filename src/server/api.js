@@ -11,7 +11,6 @@ import * as types from '../store/types'
 
 let server_url = 'http://192.168.110.129:5000'
 
-
 export const RESULT_CODE = {
     edit: 201,
     find: 200,
@@ -102,7 +101,6 @@ export const DATA_MANAGER_API = {
   // 数据导入（向表追加数据）
   async inputData({folder_name, table_name, up_data }){
     let param = {folder_name, table_name, up_data};
-    console.log(param)
     let r = await req.post_json(this.inputData_url,{ param});
     console.log(r)
   },
@@ -115,18 +113,56 @@ export const DATA_MANAGER_API = {
     return r
   }
 
-
-
-
-
-
 };
 
 //图表数据
-export const CHART_API = {
-  //分组查询一个或多个值
+export const SCREEN_API = {
+  createFolder_url: server_url + '/screen/create_folder',//创建文件夹
+  createScreen_url:  server_url + '/screen/create_screen',//创建表
+  delFolder_url:  server_url + '/screen/del_folder',//删除文件夹
+  delScreen_url:  server_url + '/screen/del_screen',//创建表
+  findTree_url:  server_url + '/screen/find_tree',//获取目录
 
-  //
+  //获取目录
+  async findTree(){
+    let param = {};
+    let r = await req.get(this.findTree_url,{});
+    return r;
+  },
+
+  //创建文件夹
+  async createFolder(folder_name){
+    let param = {folder_name};
+    let r = await req.post_form(this.createFolder_url,{param});
+    return r;
+  },
+
+  //删除文件夹
+  async delFolder({folder_name}){
+    let param = {folder_name: folder_name};
+    let r = await req.post_form(this.delFolder_url,{param});
+    return r;
+  },
+
+  //创建表
+  async createScreen({ folder_name, screen_name, option, img, note}){
+
+    let param = {
+      folder_name, screen_name, option, img, note
+    }
+    console.log(param)
+    let r = await req.post_json(this.createScreen_url,{param});
+    return r;
+  },
+
+  //删除大屏幕
+  async delScreen({folder_name, table_names}){
+    let param = {
+      folder_name, table_names
+    }
+    let r = await req.post_json(this.delScreen_url,{param});
+    return r;
+  },
 }
 
 

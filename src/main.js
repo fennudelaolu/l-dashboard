@@ -6,6 +6,7 @@ import router from './router/index'
 import App from './App'
 
 import store from "./store/store";
+import * as types from "./store/types";
 
 import uploader from 'vue-simple-uploader'
 Vue.use(uploader)
@@ -20,7 +21,8 @@ Vue.use(iView);
 import mview from './components/mview/mview';
 Vue.use(mview)
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
+Vue.prototype.$store_type = types;
 
 /* eslint-disable no-new */
 new Vue({

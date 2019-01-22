@@ -6,9 +6,12 @@
         <table :ref="'table-head'">
           <thead>
           <tr>
+            <th>
+              <div :ref="'thead'" style="width: 50px;" class="cell">#</div>
+            </th>
             <th  v-for="(head, h_i) in c_table_data.head">
               <div :ref="'thead'" class="cell">
-                <div style="width: 34px;height: 20px;">
+                <div v-show="head_bar" style="width: 34px;height: 20px;">
                   <Dropdown>
                     <a href="javascript:void(0)">
                       {{head.type || 's'}}
@@ -34,7 +37,8 @@
       <div :ref="'table-body-box'"  class="table-body" border="1">
         <table :ref="'table-body'" >
           <tbody >
-          <tr   v-for="(row, r_i) in table_data.data" :key="r_i">
+          <tr   v-for="(row, r_i) in table_body_data" :key="r_i">
+            <td><div :ref="'tbody' + r_i" style="width: 50px;" class="cell">{{r_i+1}}</div></td>
             <td  v-for="(head, h_j) in table_data.head" :key="h_j"  >
               <div :ref="'tbody' + r_i" class="cell">{{row[h_j]}}</div>
             </td>
@@ -51,6 +55,10 @@
     export default {
       name: "TableView",
       props:{
+        head_bar:{
+          type:Boolean,
+          default: false
+        },
           table_data:{
             type: Object,
             default:{
@@ -60,7 +68,11 @@
                 ]
 
             },
-          }
+          },
+        max_row:{
+          type:Number,
+          default:500
+        }
       },
       data(){
         return {
@@ -102,7 +114,13 @@
         c_table_data(){
           this.data = this.table_data;
           return this.data
+        },
+        table_body_data(){
+          return this.table_data.data.slice(0,this.max_row)
+          return this.table_data.data.slice(0,this.max_row)
+
         }
+
       },
       watch:{
         //监听触发调整表格宽
@@ -127,11 +145,13 @@
 
       .table-head{
         /*padding-right:17px;*/
+        margin: 0 auto;
         background-color:#999;
         color:#000;
         font-weight: bolder;
       }
       .table-body{
+        margin: 0 auto;
         height:calc(100% - 32px);
         overflow-y:auto;
         overflow-x: hidden;

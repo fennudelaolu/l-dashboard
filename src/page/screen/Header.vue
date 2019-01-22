@@ -535,9 +535,10 @@
             border: 'none',
             resize:'none',
             color: '#d4d4d4',
+            'background-color':'transparent',
             fontSize: 14,
-            'font-family':'',
-            'font-weight': 100,
+            'font-family':'Microsoft YaHei',
+            'font-weight': 'normal',
           },
           drag_option:{
             top: 60,
@@ -642,7 +643,7 @@
     display: none;
     position: absolute;
     top: 64px;
-    z-index: 1;
+    z-index: 999;
     background-color: #fff;
     border: 1px solid #ccc;
     color: black;
