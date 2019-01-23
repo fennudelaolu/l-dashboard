@@ -6,8 +6,10 @@
 </template>
 
 <script>
+  import { Button} from 'iview'
     export default {
       name: "ChartList",
+      components:{ Button},
       data(){
         return {
           folder_name:'文件夹1'

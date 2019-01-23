@@ -78,10 +78,10 @@
 
       <div v-for="(item, i ) in up_current_modal.up_mesage" :key="i" style="padding: 4px 0px">
         <span>
+  <!--todo 重写组件-->
+        <!--<i-circle :percent="Math.ceil((item.send_count / item.count)*100)" :size="16" :stroke-width="24" :stroke-color="up_table_status_color[item.status]">
 
-        <i-circle :percent="Math.ceil((item.send_count / item.count)*100)" :size="16" :stroke-width="24" :stroke-color="up_table_status_color[item.status]">
-
-        </i-circle>
+        </i-circle>-->
         </span>
         <span>/ {{item.folder_name}}</span>
         <span>/ {{item.table_name}}</span>
@@ -97,14 +97,16 @@
 </template>
 
 <script>
+
+  import {Tabs, TabPane, Steps, Step, Modal} from 'iview'
+
   import XLSX from 'xlsx'
   import TableView from './TableView'
-  import HelloWebWorker from 'hello-webworker'
   import {DATA_MANAGER_API} from '../../server/api'
 
 
   export default {
-    components:{TableView},
+    components:{TableView, Step, Steps, TabPane, Tabs, Modal},
     props:{
       folder_tree:{
         type:Object,

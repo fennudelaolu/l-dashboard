@@ -17,6 +17,7 @@
                       {{head.type || 's'}}
                       <Icon type="ios-arrow-down"></Icon>
                     </a>
+
                     <DropdownMenu slot="list">
                       <DropdownItem>字符串</DropdownItem>
                       <DropdownItem>日期</DropdownItem>
@@ -52,8 +53,10 @@
 </template>
 
 <script>
+  import { Dropdown,DropdownMenu, DropdownItem, Icon} from 'iview'
     export default {
       name: "TableView",
+      components:{Dropdown, DropdownMenu, DropdownItem, Icon},
       props:{
         head_bar:{
           type:Boolean,

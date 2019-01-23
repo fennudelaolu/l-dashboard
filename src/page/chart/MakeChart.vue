@@ -7,8 +7,10 @@
 </template>
 
 <script>
+  import { Button} from 'iview'
     export default {
       name: "MakeChart",
+      components:{ Button},
       props:{
         params:{},
         ['target_forder_name']:{

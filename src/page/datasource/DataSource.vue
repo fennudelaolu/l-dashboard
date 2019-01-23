@@ -40,6 +40,8 @@
 </template>
 
 <script>
+    import {Modal, Icon, Input } from 'iview';
+
     import M_Aside1 from '../../components/M_Aside1'
     import excelUploader from './excelUploader'
     import TableView from './TableView'
@@ -47,7 +49,7 @@
 
     export default {
       name: "DataSource",
-      components:{M_Aside1, excelUploader, TableView},
+      components:{M_Aside1, excelUploader, TableView, Modal,Icon, Input},
       data(){
         return {
           //视图控制

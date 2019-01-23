@@ -3,7 +3,8 @@
  * axios请求集中配置
  */
 //引入axios
-import axios from "axios";
+const axios = require('axios')
+
 import qs from "qs";
 import router from '../router/index.js'
 import store from "../store/store";
@@ -26,8 +27,6 @@ axios.defaults.timeout = 60000
 // http request 拦截器
 axios.interceptors.request.use(
     config => {
-      console.log(config)
-        alert(config.url)
 
         /*取消重复请求，保留最新*/
         let pass = white_list.filter(item => {

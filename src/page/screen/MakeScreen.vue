@@ -160,14 +160,9 @@
                 <span slot="prepend">h</span>
               </Input>
             </div>
-
           </TabPane>
           <TabPane label="配置" name="name2"></TabPane>
-
-
         </Tabs>
-
-
       </div>
 
       <div class="make-screen-right">
@@ -180,7 +175,6 @@
           </Select>
         </div>
         <div  class="top">
-
           维度
           <div v-for="(item, i) in table_head.d" :key="i" class="column-box">
             <M_Icon type="#icon_date" :size="15" color="#4a90e2"></M_Icon>
@@ -217,6 +211,9 @@
 </template>
 
 <script>
+
+  import {Modal, Tabs, TabPane, Collapse, Panel, Input, ColorPicker, Slider } from 'iview';
+
   import Header from './Header'
   import MCart from '../../components/M_Chart'
   import MDragbleBox from '../../components/mdragble/DragBox'
@@ -230,7 +227,8 @@
 
   export default {
     name: "MakeScreen",
-    components: {Header, MCart, MDragbleBox, MDragbleItem , draggable},
+    components: {Header, MCart, MDragbleBox, MDragbleItem , draggable,
+      Modal,Tabs,TabPane, Collapse, Panel, Input, ColorPicker, Slider},
     props:{
 
       target_forder_name:{

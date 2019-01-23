@@ -1,34 +1,26 @@
-import Vue from 'vue';
-import Router from 'vue-router';
+
+const Vue = require('vue')
+const Router = require('vue-router')
+
 import store from '../store/store';
 import * as types from '../store/types';
 import {routerMode} from '@/config/env';
 
-import login from '@/page/login'
-import layout from '@/page/layout';
-import datasource from '@/page/datasource/DataSource.vue';
-
-//图表页
-import chart_list from '@/page/chart/ChartList'
-import make_chart from '@/page/chart/MakeChart'
-
-//大屏幕页
-import screen_list from '@/page/screen/ScreenList'
-import make_screen from '@/page/screen/MakeScreen'
+const page = name =>()=> import('@/page/'+name)
 
 Vue.use(Router)
 const routes = [
-  {path: '/login' , name: '登陆', component: login},
-  {path: '/make_screen' , name: '大屏幕制作', props:true, component: make_screen},
+  {path: '/login' , name: '登陆', component: page('login')},
+  {path: '/make_screen' , name: '大屏幕制作', props:true, component: page('screen/MakeScreen')},
   {
-    path: '/' , name: '首页', component: layout, redirect:'/datasource',  meta: {requireAuth: true},
+    path: '/' , name: '首页', component: page('layout'), redirect:'/datasource',  meta: {requireAuth: true},
     children: [
-      {path:'/datasource', name:'数据表', component: datasource},
+      {path:'/datasource', name:'数据表', component: page('datasource/DataSource.vue')},
 
-      {path:'/chart_list', name:'图表列表', props:true,component: chart_list},
-      {path:'/make_chart', name:'图表制作', props:true, component: make_chart},
+      {path:'/chart_list', name:'图表列表', props:true,component: page('chart/ChartList')},
+      {path:'/make_chart', name:'图表制作', props:true, component: page('chart/MakeChart')},
 
-      {path:'/screen_list', name:'大屏幕列表', props:true,component: screen_list},
+      {path:'/screen_list', name:'大屏幕列表', props:true,component: page('screen/ScreenList')},
     ]
   }
 ]

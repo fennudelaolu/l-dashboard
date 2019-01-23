@@ -1,8 +1,9 @@
 /**
  * Created by superman on 17/2/16.
  */
-import Vuex from 'vuex'
-import Vue from 'vue'
+
+const Vuex = require('vuex')
+const Vue = require('vue')
 import * as types from './types'
 import * as api from '../server/api'
 import {JSONtoObject, ObjecttoJSON} from "../config/mUtils.js"

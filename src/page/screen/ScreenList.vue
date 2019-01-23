@@ -55,13 +55,15 @@
 </template>
 
 <script>
+  import {Modal, Input, Icon, Button} from 'iview'
+
   import M_Aside1 from '../../components/M_Aside1'
   import ShowScreen from './ShowScreen'
   import {SCREEN_API} from '../../server/api'
 
   export default {
     name: "ScreentList",
-    components:{M_Aside1,ShowScreen},
+    components:{M_Aside1,ShowScreen, Modal, Input, Icon, Button},
     data(){
       return {
         folder_name:'文件夹1',

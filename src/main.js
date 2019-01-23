@@ -1,6 +1,6 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
+const Vue = require('vue')
 import router from './router/index'
 
 import App from './App'
@@ -8,14 +8,7 @@ import App from './App'
 import store from "./store/store";
 import * as types from "./store/types";
 
-import uploader from 'vue-simple-uploader'
-Vue.use(uploader)
-
-import * as mUtil from './config/mUtils';
-
-import iView from "iview";
 import 'iview/dist/styles/iview.css';
-Vue.use(iView);
 
 //自定义全局组件
 import mview from './components/mview/mview';
