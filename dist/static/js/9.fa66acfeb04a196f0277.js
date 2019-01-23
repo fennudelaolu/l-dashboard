@@ -1,0 +1,1 @@
+webpackJsonp([9],{A6uh:function(e,t){},b172:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r={render:function(){var e=this.$createElement;return(this._self._c||e)("div")},staticRenderFns:[]};var c=n("C7Lr")({name:"Detail"},r,!1,function(e){n("A6uh")},"data-v-2cccfd44",null);t.default=c.exports}});
