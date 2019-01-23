@@ -77,6 +77,7 @@
       computed:{
         user(){
           let user = this.$store.getters[this.$store_type.USER] || {}
+
           return user
         }
       }

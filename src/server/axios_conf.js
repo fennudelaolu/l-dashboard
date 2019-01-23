@@ -9,28 +9,34 @@ import router from '../router/index.js'
 import store from "../store/store";
 import * as types from "../store/types";
 
+import {baseUrl} from '../config/env'
 
 let cancel, promiseArr = {}
 const CancelToken = axios.CancelToken;
 
-//axios.defaults.baseURL = 'https://api.example.com';		//不用重复去写url
+axios.defaults.baseURL = baseUrl;		//不用重复去写url
 axios.defaults.headers.common['Authorization'] = 'luzhenjiang';	//不用重复去传token
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-
+//设置默认请求头
+axios.defaults.headers = {
+  'X-Requested-With': 'XMLHttpRequest'
+}
+axios.defaults.timeout = 60000
 
 // http request 拦截器
 axios.interceptors.request.use(
     config => {
-
+      console.log(config)
+        alert(config.url)
 
         /*取消重复请求，保留最新*/
         let pass = white_list.filter(item => {
             return config.url.indexOf(item) != -1;
         })
         if (pass.length == 0) {
-            console.log(config.url)
+
             if (promiseArr[config.url]) {
-                console.log("out")
+                console.log("out"+config.url)
                 promiseArr[config.url]('请求频繁，操作取消')
                 promiseArr[config.url] = cancel
             } else {
@@ -50,9 +56,6 @@ axios.interceptors.request.use(
       config.headers['Access-Control-Allow-Methods'] = "*" ;
       config.headers['Access-Control-Allow-Credentials'] = "true" ;
 
-
-
-
         return config;
     },
     err => {
@@ -64,19 +67,22 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(response => {
     return response
 }, error => {
+    let res = {}
     let data = {}
+    let status = -1;
+    let msg = '';
     try {
-        data = error.response.data || {}
+      res = error.response || {}
+      status = res.status || -1
+      data = res.data || {}
+      msg = res.statusText || data.msg || ''
     } catch (e) {
-        data = error
+      msg =  '与服务器链接失败'
     }
 
-    let status;
-    let msg;
 
+/*
     try {
-        msg = data.message || data.statusText || ''
-
         if (msg === '') {
             status = 500
             msg = '连接服务器失败'
@@ -86,17 +92,15 @@ axios.interceptors.response.use(response => {
     } catch (err) {
         status = 500
         msg = '连接服务器失败'
-    }
-    console.log(data)
+    }*/
     let err = {
         status: status,
         statusText: msg,
-        data: {}
+        data: data
     }
 
 
     if (status) {
-
         switch (status) {
             case 401:
                 err.statusText = '未授权，请重新登录'
@@ -138,14 +142,8 @@ axios.interceptors.response.use(response => {
     }
     return Promise.resolve(err)
 })
-//添加前缀
-/*axios.defaults.baseURL = 'http://本地测试集群地址'*/
-axios.defaults.baseURL = '';
-//设置默认请求头
-axios.defaults.headers = {
-    'X-Requested-With': 'XMLHttpRequest'
-}
-axios.defaults.timeout = 60000
+
+
 
 export default {
 
