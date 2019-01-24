@@ -84,5 +84,7 @@ module.exports = {
     'axios':'axios',
     'vue-router':'VueRouter',
     'vuex':'Vuex',
+    'echarts': 'echarts',
+    'xlsx':'XLSX'
   },
 }

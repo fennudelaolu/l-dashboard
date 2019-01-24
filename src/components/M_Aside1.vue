@@ -23,6 +23,7 @@
             </a>
 
             <div class="folder-drop">
+
               <Dropdown class="m-aside1-drapdown" trigger="click">
                 <a href="javascript:void(0)">
                   <M_Icon :size="24" type="#btn_more1" class=""></M_Icon>
@@ -69,10 +70,11 @@
 </template>
 
 <script>
-
+  import {Tooltip, Dropdown, DropdownMenu, DropdownItem} from 'iview'
 
   export default {
     name: "m_aside1",
+    components:{Tooltip, Dropdown, DropdownMenu, DropdownItem},
     props: {
       list: {
         type: Object,

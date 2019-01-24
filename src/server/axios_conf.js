@@ -3,7 +3,8 @@
  * axios请求集中配置
  */
 //引入axios
-const axios = require('axios')
+
+import axios from 'axios';
 
 import qs from "qs";
 import router from '../router/index.js'

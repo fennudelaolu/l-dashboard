@@ -97,7 +97,7 @@
 </template>
 
 <script>
-
+  import uploader from 'vue-simple-uploader'
   import {Tabs, TabPane, Steps, Step, Modal} from 'iview'
 
   import XLSX from 'xlsx'
@@ -106,7 +106,7 @@
 
 
   export default {
-    components:{TableView, Step, Steps, TabPane, Tabs, Modal},
+    components:{uploader,TableView, Step, Steps, TabPane, Tabs, Modal},
     props:{
       folder_tree:{
         type:Object,

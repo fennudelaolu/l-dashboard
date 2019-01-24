@@ -1,6 +1,5 @@
-
-const Vue = require('vue')
-const Router = require('vue-router')
+import Vue from 'vue';
+import Router from 'vue-router';
 
 import store from '../store/store';
 import * as types from '../store/types';
