@@ -7,7 +7,8 @@
   1.依赖svg-icon文件，无法独立成单独插件
 -->
 <template>
-  <svg  @click="onclick" :style=style class="mview-onmouse0">
+<!--todo ie动态设置无效-->
+  <svg  @click="onclick" :style=style   class="mview-onmouse0">
     <use :href="type"  :fill="fill"></use>
   </svg>
 </template>
@@ -39,7 +40,7 @@
       computed: {
         style() {
           let v = parseInt(this.size) || 0;
-          return v?{width: v,height:v,display:'inline-block'}:{};
+          return v?{width: v+'px',height:v+'px',display:'inline-block'}:{};
         },
         fill(){
           let color = this.color || '#999';

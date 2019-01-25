@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
     <header class="layout-header">
-      <Header @save="saveScreenReady" @preview="previewScreen"  @addDragItem="addDragItem"
+      <Header :ref="'header'" @save="saveScreenReady" @preview="previewScreen"  @addDragItem="addDragItem"
               @setZIndex="setZIndex"
               :active_index="drag_active_index">
       </Header>
@@ -39,13 +39,16 @@
           <Panel name="2">
             页面背景
             <div slot="content">
-            背景颜色<ColorPicker v-model="drag_box_option.style.background_color" alpha />
+            背景颜色
+              <ColorPicker v-model="drag_box_option.style.background_color" alpha />
             </div>
           </Panel>
 
         </Collapse>
         缩放（%）
         <Slider v-model="drag_zoom" :min="0.75" :max="1.5" :step="0.01"></Slider>
+
+
       </div>
       <!--画布配置：图片样式-->
       <div v-else-if="act_drag.type === 'img'" class="make-screen-center">
@@ -131,7 +134,10 @@
         </div>
         <div class="row">
           <div class="row-title" >加粗</div>
-          <i-switch v-model="drag_items[drag_active_index].style['font-weight']" :true-value="'bold'" :false-value="'normal'"/>
+          <i-switch
+            v-model="drag_items[drag_active_index].style['font-weight']"
+            :true-value="'bold'" :false-value="'normal'">
+          </i-switch>
         </div>
 
       </div>
@@ -193,15 +199,26 @@
             {{item}}
           </div>
         </div>
+        <Button>231213</Button>
       </div>
     </section>
 
     <Modal
+      width="500px"
       v-model="save_modal1.show"
       title="保存">
-      <p>Content of dialog</p>
-      <p>Content of dialog</p>
-      <p>Content of dialog</p>
+      <Form :model="save_modal1" :label-width="50">
+
+        <FormItem  label="文件夹">
+          <Select  v-model="save_modal1.target_forder_name">
+            <Option  v-for="(item, i) in table_tree" :key="i" :value="i">{{i}}</Option>
+          </Select>
+        </FormItem>
+
+        <FormItem label="备注">
+          <Input v-model="save_modal1.note" type="textarea" :autosize="{minRows: 4,maxRows: 5}" placeholder="Enter something..."></Input>
+        </FormItem>
+      </Form>
       <div slot="footer">
         <Button type="primary" @click="saveScreen" >保存</Button>
       </div>
@@ -212,7 +229,7 @@
 
 <script>
 
-  import {Modal, Tabs, TabPane, Collapse, Panel, Input, ColorPicker, Slider } from 'iview';
+  import {Switch, ColorPicker, Slider } from 'iview';
 
   import Header from './Header'
   import MCart from '../../components/M_Chart'
@@ -221,14 +238,15 @@
   //拖拽组件
   import draggable from 'vuedraggable'
 
-  import html2canvas from 'html2canvas'
+  const html2canvas =  require( 'html2canvas')
 
   import {DATA_MANAGER_API, SCREEN_API} from '../../server/api'
 
   export default {
     name: "MakeScreen",
     components: {Header, MCart, MDragbleBox, MDragbleItem , draggable,
-      Modal,Tabs,TabPane, Collapse, Panel, Input, ColorPicker, Slider},
+      'i-switch':Switch, ColorPicker, Slider
+      },
     props:{
 
       target_forder_name:{
@@ -301,10 +319,10 @@
         //获取左侧目录
         let r = await DATA_MANAGER_API.findTree();
         if(r.data.code == 200){
-          this.table_tree = r.data.data || null
+          this.table_tree = r.data.data || []
           console.log( this.table_tree)
         } else {
-          this.aside_tree = null
+          this.table_tree  = []
         }
 
       },
@@ -316,8 +334,8 @@
       },
       async saveScreen(){
         let img = await this.toBase64();
-        let folder_name = this.target_forder_name;
-        let screen_name = this.save_modal1.screen_name;
+        let folder_name = this.save_modal1.target_forder_name;
+        let screen_name = this.$refs.header.screen_name;
         let note = this.save_modal1.note;
         let option = {
           drag_box_option:this.drag_box_option,

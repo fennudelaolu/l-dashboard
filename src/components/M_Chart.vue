@@ -6,7 +6,7 @@
 
 <script>
     import echarts from 'echarts'
-    require('echarts/map/js/china.js')
+
     // import 'echarts/map/js/china.js';
     // import 'echarts/map/js/world.js';
 

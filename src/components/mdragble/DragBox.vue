@@ -1,5 +1,6 @@
 <template>
-    <div @mousedown="readyEvent($event)"  :style="box_style" class="mdragble-box" dragbox>
+  <!--@mousedown="readyEvent($event)"-->
+    <div   :style="box_style" class="mdragble-box" dragbox>
       <slot></slot>
     </div>
 </template>
@@ -46,37 +47,19 @@
       },
       methods:{
         //注册事件，并记录当前操作dom
-        readyEvent(event){
+        readyEvent(act_node,mouse_x,mouse_y,type){
 
-          let path = event.path;
-          let act_node = null;//记录待操作容器
+          //当前坐标
+          this.mouse_x = mouse_x;
+          this.mouse_y = mouse_y;
 
-          for(let i in path ) {
-            let attrs = path[i].attributes;
-            if(attrs.dragbar != undefined){
-              window.onmousemove = this.resizeEvent
-              i++;
-            } else if(attrs.dragitem != undefined){
-              window.onmousemove = this.moveEvent;
-
-            } else if(attrs.dragbox != undefined){
-              this.cleanEvent();
-              this.$emit('clickItem',{active_index: ''})
-              return;
-            } else{
-              continue;
-            }
-            act_node = path[i]
-            break;
+          if(type === 'move'){
+            window.onmousemove = this.moveEvent;
+          }else {
+            window.onmousemove = this.resizeEvent
           }
-
           //松开鼠标清除事件
           window.onmouseup = this.cleanEvent
-          //当前坐标
-          this.mouse_x = event.x;
-          this.mouse_y = event.y;
-
-
           //记录当前操作容器信息与索引
           this.active_item = {
             w: act_node.offsetWidth ,
@@ -90,6 +73,7 @@
             max_top:this.option.style.height - act_node.offsetHeight,
 
           }
+
           this.active_index = act_node.getAttribute('item_index');
 
           //告诉父组件当前操作容器的索引

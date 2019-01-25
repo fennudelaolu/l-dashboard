@@ -1,7 +1,7 @@
 <template>
   <!--读取文件-->
   <div class="excel-uploader">
-
+{{folder_tree}}
     <header class="excel-uploader-header">
       <Steps :current="current">
         <Step title="已完成" content="上传文件"></Step>
@@ -14,6 +14,7 @@
       <!--第一步：上传-->
 
       <uploader v-if="current == 0 " :options="options" @file-added="initFile" :autoStart="false" class="uploader-example">
+
         <uploader-unsupport></uploader-unsupport>
         <uploader-drop style="text-align: center">
           <uploader-btn :attrs="attrs" :single="true" >点击上传文件1</uploader-btn>或拖拽上传
@@ -23,10 +24,13 @@
         <uploader-list></uploader-list>
       </uploader>
       <!--第二步：设置数据类型-->
-      <Tabs v-else-if="current == 1 " type="card" style="width: 100%;height: 100%;" >
-        <TabPane  v-for="(sheet, s_i) in xls_view_data" :key="s_i" :label="s_i"  style="width: 100%;height: 100%;" >
 
-          <TableView :table_data="sheet" :max_row="1000"></TableView>
+      <Tabs v-else-if="current == 1 " type="card" style="width: 100%;height: 100%;" >
+
+        <TabPane  v-for="(sheet, s_i) in xlsx_info" :key="s_i" :label="s_i"  style="width: 100%;height: 100%;" >
+
+          <TableView :table_data="sheet" :head_bar="true"  :max_row="1000" :table_info="s_i"
+            @chooseHeadType="chooseHeadType"></TableView>
 
           </TabPane>
       </Tabs>
@@ -78,10 +82,10 @@
 
       <div v-for="(item, i ) in up_current_modal.up_mesage" :key="i" style="padding: 4px 0px">
         <span>
-  <!--todo 重写组件-->
-        <!--<i-circle :percent="Math.ceil((item.send_count / item.count)*100)" :size="16" :stroke-width="24" :stroke-color="up_table_status_color[item.status]">
 
-        </i-circle>-->
+        <i-circle :percent="Math.ceil((item.send_count / item.count)*100)" :size="16" :stroke-width="24" :stroke-color="up_table_status_color[item.status]">
+
+        </i-circle>
         </span>
         <span>/ {{item.folder_name}}</span>
         <span>/ {{item.table_name}}</span>
@@ -97,16 +101,17 @@
 </template>
 
 <script>
-  import uploader from 'vue-simple-uploader'
-  import {Tabs, TabPane, Steps, Step, Modal} from 'iview'
+  // import uploader from 'vue-simple-uploader'
+  import { Steps, Step} from 'iview'
 
   import XLSX from 'xlsx'
   import TableView from './TableView'
   import {DATA_MANAGER_API} from '../../server/api'
+  import {baseUrl} from '../../config/env'
 
 
   export default {
-    components:{uploader,TableView, Step, Steps, TabPane, Tabs, Modal},
+    components:{  TableView, Step, Steps},
     props:{
       folder_tree:{
         type:Object,
@@ -179,10 +184,98 @@
 
     },
     methods:{
+
       init(){
         this.xlsx_info = {}
         this.act_form_index = 0;
       },
+      //上一步操作
+      lastStep(){
+        if(this.current == 1){
+          this.init();
+        }
+        this.current -= this.current==0 ? 0:1;
+
+      },
+
+      //点击tab标签切换form表单
+      changeForm(index){
+        this.act_form_index = index;
+      },
+      //创建表并准备上传已读取文件数据
+      async createTableAndReadyUpload(){
+
+        let data = this.xlsx_info
+        let upworker_json_data = []
+        //创建表并准备上传数据
+        for(let sheet_key in data){
+          let head = data[sheet_key].head
+          let columns = {}
+          for(let i in head){
+            columns[i] = head[i].type || ''
+          }
+
+          let r = await  DATA_MANAGER_API.createTable({
+            folder_name: this.up_form[sheet_key].folder_name || '未分组',
+            table_name: this.up_form[sheet_key].table_name,
+            note: this.up_form[sheet_key].note,
+            head:JSON.stringify(head),
+            columns: columns
+          })
+          if(r.data.code == 200) {
+
+            let up_data = data[sheet_key].data
+
+            upworker_json_data.push({
+              folder_name: this.up_form[sheet_key].folder_name || '未分组',
+              table_name: this.up_form[sheet_key].table_name,
+              up_data,
+            })
+          }
+        }
+
+        this.uploadData(upworker_json_data)
+
+      },
+      //上传数据
+      uploadData(upworker_json_data){
+
+        let _this = this;
+        this.up_current_modal.show = true;
+        let  worker = new Worker('/static/up_plugin/main.js');
+        worker.postMessage({
+          method:'readyUpload',
+          args:{
+            url:baseUrl+DATA_MANAGER_API.inputData_url,
+            method:'POST',
+            token:_this.user_token,
+            json_data:upworker_json_data
+          }});
+        worker.onmessage = function (event) {
+          let data = event.data;
+          let status = data.status;
+          _this.up_status =status
+          switch (status) {
+            case 'working': break;
+            case 'end': worker.terminate();break;
+          }
+          _this.up_current_modal.up_mesage = data.message || [];
+        }
+        this.up_workers.push(worker)
+      },
+      //结束上传
+      closeUp(){
+        for(let i in this.up_workers){
+          this.up_workers[i].terminate();
+        }
+        this.up_workers = [];
+        this.up_current_modal={
+          show:false,
+          up_mesage:[]
+        }
+        this.$emit('endUpdata',{});
+      },
+
       /*--------------------For vue-simple-uploader-----------------*/
       //选择文件
       initFile(file){
@@ -224,9 +317,12 @@
           //读表
             const data = ev.target.result;
             //cellDates: true, 时间格式
+            //todo 日期转成浮点型
             const workbook = XLSX.read(data, {
               type: 'binary',dateNF:'mm/dd/yyyy', cellDates: true, raw:false
             });
+
+
 
             //格式化数据
             _this.xlsx_info = {}  //初始化表信息
@@ -239,8 +335,6 @@
 
               if(sheets.length == 0) {continue;}
 
-              let date = new Date(sheets[0].ff)
-
               let heads = Object.keys(sheets[0]);
               let head = {};
               for (let i in heads){
@@ -251,7 +345,8 @@
               _this.xlsx_info[sheet_k] = {
                 head: head,
                 filtter: [],
-                data: sheets
+                old_data: sheets,
+                data: JSON.parse(JSON.stringify(sheets))
               };
 
             }
@@ -266,152 +361,88 @@
         fileReader.readAsBinaryString(file);
 
       },
-
-      //上一步操作
-      lastStep(){
-        if(this.current == 1){
-          this.init();
-        }
-        this.current--;
+      /*---------------------For TableView----------------------------*/
+      //修改字段类型
+      chooseHeadType({table_info,head_name,type}){
+        let _xlsx_info = this.xlsx_info;
+        this.xlsx_info = {};
+        let h = _xlsx_info[table_info].head
+        h[head_name] = {type};
+        this.xlsx_info =_xlsx_info
       },
-      //点击tab标签切换form表单
-      changeForm(index){
-        this.act_form_index = index;
-      },
-      //上传已读取文件数据
-      //todo 需要多线程支持
-      async createTableAndReadyUpload(){
-
-        let data = this.xls_view_data;
-        let upworker_json_data = []
-        for(let sheet_key in data){
-          let head = data[sheet_key].head
-          let columns = {}
-          for(let i in head){
-            columns[i] = head[i].type || ''
-          }
-
-          let r = await  DATA_MANAGER_API.createTable({
-            folder_name: this.up_form[sheet_key].folder_name || '未分组',
-            table_name: this.up_form[sheet_key].table_name,
-            note: this.up_form[sheet_key].note,
-            head:JSON.stringify(head),
-            columns: columns
-          })
-          if(r.data.code == 200) {
-
-            let up_data = data[sheet_key].data
-
-            upworker_json_data.push({
-              folder_name: this.up_form[sheet_key].folder_name || '未分组',
-              table_name: this.up_form[sheet_key].table_name,
-              up_data,
-            })
-          }
-        }
-
-        this.uploadData(upworker_json_data)
-
-      },
-      uploadData(upworker_json_data){
-        let _this = this;
-        this.up_current_modal.show = true;
-        let  worker = new Worker('/static/up_plugin/main.js');
-        worker.postMessage({
-          method:'readyUpload',
-          args:{
-            url:DATA_MANAGER_API.inputData_url,
-            method:'POST',
-            token:_this.user_token,
-            json_data:upworker_json_data
-          }});
-        worker.onmessage = function (event) {
-          let data = event.data;
-          let status = data.status;
-          _this.up_status =status
-          switch (status) {
-            case 'working': break;
-            case 'end': worker.terminate();break;
-          }
-          _this.up_current_modal.up_mesage = data.message || [];
-          console.log(_this.up_current_modal.up_mesage)
-        }
-        this.up_workers.push(worker)
-      },
-      //关闭上传
-      closeUp(){
-        for(let i in this.up_workers){
-          this.up_workers[i].terminate();
-        }
-        this.up_workers = [];
-        this.up_current_modal={
-          show:false,
-          up_mesage:[]
-        }
-        this.$emit('endUpdata',{});
-      }
 
     },
     computed:{
+      //获取token权限，用于webworker 上传
       user_token(){
         let user = this.$store.getters[this.$store_type.USER] || {}
         return user.token || ''
       },
-      xls_view_data(){
-        let _xlsx_info = Object.assign({},this.xlsx_info );
 
-        this.up_form = {}
-
-        //遍历 根据字段类型格式化
-        for(let sheet_k in _xlsx_info) {
-
-          let sheet = _xlsx_info[sheet_k];
-          let data = sheet.data;
-          let head = sheet.head;
-
-          for(let i in data){
-            let row = data[i];
-            for(let j in head){
-
-              let cell = row[j];
-
-              //todo 不严谨 需要类型判断
-              if(typeof cell === 'object'){
-                cell = cell.Format('yyyy-MM-dd hh:mm:ss.S');
-              }
-
-              let data_type = head[j].type;
-              let v = '';
-              switch (data_type) {
-                case 'n':
-                  v = parseFloat(cell);break;
-                case 'd':
-                  v = cell.d;break;
-                case 's': ;
-                default:
-                  v = cell.toString();
-              }
-              row[j] = v;
-            }
-          }
-
-          this.up_form[sheet_k] = {
-            table_name: this.file_name + ' - '+ sheet_k,
-            folder_name: this.target_folder.name || '未分组',
-            note:''
-          }
-
-        }
-
-        /*
-         *  filter 过滤信息
-         * */
-        if(JSON.stringify(_xlsx_info) === '{}'){return null}
-        return _xlsx_info;
-      }
     },
     watch:{
+      xlsx_info: {
+        handler(newval, oldval) {
 
+
+          let _xlsx_info = this.xlsx_info;
+
+          this.up_form = {}
+
+          //遍历 根据字段类型格式化
+          for(let sheet_k in _xlsx_info) {
+
+            let sheet = _xlsx_info[sheet_k];
+            let old_data = sheet.old_data;
+            let data = JSON.parse(JSON.stringify(old_data));
+            let head = sheet.head;
+
+            for(let i in data){
+              let row = data[i];
+              for(let j in head){
+
+                let cell = row[j];
+
+                //todo 浮点型转成日期
+                /*if(typeof cell === 'object'){
+                  cell = cell.Format('yyyy-MM-dd hh:mm:ss.S');
+                }*/
+
+                let data_type = head[j].type;
+                let v = '';
+
+                let a = parseFloat(cell)
+                switch (data_type) {
+                  case 'n':
+                    v = parseFloat(cell) || 0;break;
+                  case 'd':
+                    v = cell;break;
+                  case 's': ;
+                  default:
+
+                    v = cell.toString();
+                }
+
+                this.xlsx_info[sheet_k]['data'][i][j] = v;
+              }
+            }
+
+            this.up_form[sheet_k] = {
+              table_name: this.file_name + ' - '+ sheet_k,
+              folder_name: this.target_folder.name || '未分组',
+              note:''
+            }
+
+          }
+
+          /*
+           *  filter 过滤信息
+           * */
+          if(JSON.stringify(_xlsx_info) === '{}'){return null}
+
+        },
+        deep: true
+      }
     }
   }
 </script>

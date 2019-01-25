@@ -12,6 +12,8 @@ $m_t_height:64px;
 $m_t_bc:#363D3F;
 .layout{
   @include size(100%,100%);
+  min-height: 600px;
+  min-width: 960px;
   &-header{
     @include size(100%,$m_t_height);
     background-color: $m_t_bc;

@@ -84,7 +84,10 @@ module.exports = {
     'axios':'axios',
     'vue-router':'VueRouter',
     'vuex':'Vuex',
+    /*'element-ui':'ELEMENT',*/
     'echarts': 'echarts',
-    'xlsx':'XLSX'
+    'xlsx':'XLSX',
+    'html2canvas': 'html2canvas'
+
   },
 }

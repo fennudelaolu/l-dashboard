@@ -107,7 +107,7 @@
 
           <div class="frame-dropdown">
             <div class="frame-dropdown-rel" >
-              <M_Icon  type="#icon_exit" style="margin: 0px auto; display: block;" :size="25" :color="'#fff'"  ></M_Icon>
+              <M_Icon  type="#icon_back_r" style="margin: 0px auto; display: block;" :size="25" :color="'#fff'"  ></M_Icon>
               <div>退出</div>
             </div>
           </div>

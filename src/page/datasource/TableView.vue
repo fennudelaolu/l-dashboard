@@ -1,13 +1,13 @@
 <template>
   <!--todo 筛选-->
     <div class="data-source-tableview">
-
+      <div>共{{table_data.data.length}}条数据，当前显示{{table_body_data.length}}条</div>
       <div :ref="'table-head-box'" class="table-head">
         <table :ref="'table-head'">
           <thead>
           <tr>
             <th>
-              <div :ref="'thead'" style="width: 50px;" class="cell">#</div>
+              <div style="width: 15px;" >#</div>
             </th>
             <th  v-for="(head, h_i) in c_table_data.head">
               <div :ref="'thead'" class="cell">
@@ -19,9 +19,16 @@
                     </a>
 
                     <DropdownMenu slot="list">
-                      <DropdownItem>字符串</DropdownItem>
-                      <DropdownItem>日期</DropdownItem>
-                      <DropdownItem>数字</DropdownItem>
+
+                      <div @click="chooseHeadType(h_i,'s')">
+                        <DropdownItem>字符串</DropdownItem>
+                      </div>
+                      <div @click="chooseHeadType(h_i,'d')">
+                        <DropdownItem>日期</DropdownItem>
+                      </div>
+                      <div @click="chooseHeadType(h_i,'n')">
+                        <DropdownItem>数字</DropdownItem>
+                      </div>
 
                     </DropdownMenu>
                   </Dropdown>
@@ -39,7 +46,7 @@
         <table :ref="'table-body'" >
           <tbody >
           <tr   v-for="(row, r_i) in table_body_data" :key="r_i">
-            <td><div :ref="'tbody' + r_i" style="width: 50px;" class="cell">{{r_i+1}}</div></td>
+            <td><div style="width: 15px;" >{{r_i+1}}</div></td>
             <td  v-for="(head, h_j) in table_data.head" :key="h_j"  >
               <div :ref="'tbody' + r_i" class="cell">{{row[h_j]}}</div>
             </td>
@@ -53,16 +60,18 @@
 </template>
 
 <script>
-  import { Dropdown,DropdownMenu, DropdownItem, Icon} from 'iview'
+  import { Icon} from 'iview'
     export default {
       name: "TableView",
-      components:{Dropdown, DropdownMenu, DropdownItem, Icon},
+      components:{ Icon},
       props:{
+        //是否含有头部类型选择按钮
         head_bar:{
           type:Boolean,
           default: false
         },
-          table_data:{
+        //显示数据
+        table_data:{
             type: Object,
             default:{
               head:{col1:{type:'s'},col2:{type: 'd'}},
@@ -72,10 +81,13 @@
 
             },
           },
+        //最大显示行数
         max_row:{
           type:Number,
           default:500
-        }
+        },
+        //自定义表信息,此组件任何事件都返回该数据，类型不限
+        table_info:''
       },
       data(){
         return {
@@ -111,6 +123,10 @@
           let table_body = this.$refs['table-body'];
           this.compareWidth([table_body_box], [table_body])
         },
+        //选择头类型
+        chooseHeadType(head_name,type){
+          this.$emit('chooseHeadType',{table_info:this.table_info, head_name, type})
+        }
       },
 
       computed:{

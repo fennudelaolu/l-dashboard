@@ -1,7 +1,7 @@
 <template>
   <div class="data-source">
     <aside class="data-source-aside">
-      <M_Aside1 :list="aside_tree"
+      <M_Aside1 :list="aside_tree" title="数据表"
                 @create="createF" @delete="del_ready" @openFile="openFile" @refreshTree="init"></M_Aside1>
     </aside>
     <section class="data-source-section">
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-    import {Modal, Icon, Input } from 'iview';
+    import { Icon } from 'iview';
 
     import M_Aside1 from '../../components/M_Aside1'
     import excelUploader from './excelUploader'
@@ -49,7 +49,7 @@
 
     export default {
       name: "DataSource",
-      components:{M_Aside1, excelUploader, TableView, Modal,Icon, Input},
+      components:{M_Aside1, excelUploader, TableView, Icon},
       data(){
         return {
           //视图控制

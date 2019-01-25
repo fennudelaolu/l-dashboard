@@ -2,7 +2,7 @@
   <div class="m-aside1">
     <!--功能名称-->
     <div class="m-aside1-title">
-      <div class="g-fl f-b f-12">数据表</div>
+      <div class="g-fl f-b f-12">{{title}}</div>
       <M_Icon :size="24" type="#icon_refresh" :isbtn="true" color="#aaa" class="g-fr" @click="refreshTree()"></M_Icon>
       <M_Icon :size="24" type="#btn_add" :isbtn="true" color="#aaa" class="g-fr" @click="createFolder()"></M_Icon>
     </div>
@@ -70,12 +70,16 @@
 </template>
 
 <script>
-  import {Tooltip, Dropdown, DropdownMenu, DropdownItem} from 'iview'
+  import {Tooltip} from 'iview'
 
   export default {
     name: "m_aside1",
-    components:{Tooltip, Dropdown, DropdownMenu, DropdownItem},
+    components:{Tooltip},
     props: {
+      title:{
+        type: String,
+        default: '左侧菜单'
+      },
       list: {
         type: Object,
         default: {
@@ -277,6 +281,9 @@
       margin: 0 0;
       width: 60px;
       padding: 4px 8px;
+    }
+    .m-aside1-drapdown .ivu-dropdown-menu {
+      min-width: 10px;
     }
   }
 

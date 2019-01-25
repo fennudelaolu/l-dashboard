@@ -1,7 +1,7 @@
 <template>
   <div class="screnn-list">
     <aside class="screnn-list-aside">
-      <M_Aside1 :list="aside_tree"
+      <M_Aside1 :list="aside_tree" title="大屏幕"
            @create="createF" @delete="del_ready" @openFile="openFile" @refreshTree="init"></M_Aside1>
     </aside>
     <section class="screnn-list-section" style="padding:0;">
@@ -11,7 +11,6 @@
           <Button  disabled>全屏</Button>
           <Button  disabled>刷新数据</Button>
           <Button  disabled>编辑</Button>
-          <Button type="error" >删除</Button>
         </div>
       </div>
       <div class="screen-list-right-section">
@@ -55,7 +54,7 @@
 </template>
 
 <script>
-  import {Modal, Input, Icon, Button} from 'iview'
+  import {Icon} from 'iview'
 
   import M_Aside1 from '../../components/M_Aside1'
   import ShowScreen from './ShowScreen'
@@ -63,7 +62,7 @@
 
   export default {
     name: "ScreentList",
-    components:{M_Aside1,ShowScreen, Modal, Input, Icon, Button},
+    components:{M_Aside1,ShowScreen,  Icon},
     data(){
       return {
         folder_name:'文件夹1',

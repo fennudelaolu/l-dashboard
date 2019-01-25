@@ -80,12 +80,12 @@
 
 <script>
 
-    import Input from 'iview/src/components/input/input'
+
     import {getUSER_TOKEN, setUSER_TOKEN} from '../config/mUtils'
     import {LOGIN_API, RESULT_CODE} from '../server/api'
 
     export default {
-        components: {Input},
+        components: {},
 
         data() {
             return {

@@ -1,7 +1,7 @@
 <template>
-    <div :style="item_style" class="mdragble-item" dragtype="item" :item_index="index" dragitem>
+    <div @mousedown.stop="createEvent($event,'move')" :style="item_style" class="mdragble-item" dragtype="item" :item_index="index" dragitem>
       <!--缩放按钮-->
-      <div ref="bar" v-show="isActive" class="mdragble-item-bar" :item_index="index" dragbar ></div>
+      <div @mousedown.stop="createEvent($event,'resize')"  ref="bar" v-show="isActive" class="mdragble-item-bar" :item_index="index" dragbar ></div>
       <slot ></slot>
     </div>
 </template>
@@ -24,7 +24,12 @@
         active_index:''
       },
       methods:{
+        createEvent(event, type){
+          let mouse_x = event.x;
+          let mouse_y = event.y;
 
+          this.$parent.readyEvent(this.$el,mouse_x,mouse_y,type)
+        },
       },
       computed: {
         item_style(){

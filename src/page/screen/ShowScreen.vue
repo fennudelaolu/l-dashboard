@@ -38,6 +38,7 @@
     },
 
     methods: {
+      //根据外边框计算缩放比例
       setZoom(){
         //获取原始大小
         let w = this.drag_box_option.style.width;
@@ -65,6 +66,7 @@
         this.setCom_drag_box_option(drag_zoom);
 
       },
+      //根据比例计算容器与容器内元素的大小
       setCom_drag_items(drag_zoom){
         let drag_items =  JSON.parse(JSON.stringify(this.drag_items));
         let z = drag_zoom;

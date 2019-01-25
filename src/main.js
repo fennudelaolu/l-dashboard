@@ -8,7 +8,12 @@ import App from './App'
 import store from "./store/store";
 import * as types from "./store/types";
 
+
+
 import 'iview/dist/styles/iview.css';
+import iView from 'iview'
+Vue.use(iView)
+
 
 //自定义全局组件
 import mview from './components/mview/mview';
@@ -25,7 +30,11 @@ new Vue({
   el: '#app',
   router,
   store,
-  components: { App ,mview},
+  components: { App ,mview,
+
+
+
+  },
   template: '<App/>'
 })
 
