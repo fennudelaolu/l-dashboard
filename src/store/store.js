@@ -12,25 +12,19 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state (){
         return {
-            //api地址
-            api_url: '',
-            user: null,
+          //用户登陆信息
+          user: null,
+          //展示大屏幕配置
+          screen_option: null,
+
+
         }
     },
     modules: {
     },
     mutations: {
-        [types.api_url]: (state, data) => {
-            state.api_url = data;
-        },
-
-        [types.LOGIN]: (state, data) => {
-            localStorage.token = data;
-            state.token = data;
-        },
-        [types.LOGOUT]: (state) => {
-            localStorage.removeItem('token');
-            state.token = null
+        [types.SCREEN_OPTION]: (state, data) => {
+            state.screen_option = data;
         },
 
         [types.USER]: (state, data) => {
@@ -40,8 +34,8 @@ export default new Vuex.Store({
     },
     getters: {
 
-        api_url: (state) => {
-            return state.api_url;
+      screen_option: (state) => {
+            return state.screen_option;
         },
 
       user: (state) => {

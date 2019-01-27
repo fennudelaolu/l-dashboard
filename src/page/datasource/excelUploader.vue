@@ -1,7 +1,7 @@
 <template>
   <!--读取文件-->
   <div class="excel-uploader">
-{{folder_tree}}
+
     <header class="excel-uploader-header">
       <Steps :current="current">
         <Step title="已完成" content="上传文件"></Step>
@@ -476,18 +476,21 @@
       @include size(100%, $_footer-h);
       padding-top: 10px;
     }
+
+
+    /*上传文件组件*/
+    .uploader-example {
+      width: 100%;
+      padding: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+    }
+    /*覆盖样式*/
+    .uploader-btn {
+      color: blue !important;
+      border: 0  !important;
+    }
+
   }
 
-  /*上传文件组件*/
-  .uploader-example {
-    width: 100%;
-    padding: 15px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, .4);
-  }
-  /*覆盖样式*/
-  .uploader-btn {
-    color: blue !important;
-    border: 0  !important;
-  }
 
 </style>

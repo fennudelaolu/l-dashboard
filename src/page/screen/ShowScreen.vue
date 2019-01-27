@@ -1,5 +1,6 @@
 <template>
   <div :ref="'show-screen'" class="show-screen">
+    <Button v-show="haveback" @click="back" style="position: absolute;top: 1px;left: 1px">返回</Button>
     <MDragbleBox style="margin: 0 auto;" v-if="com_drag_box_option!=null" :option="com_drag_box_option"  :have_border="false" >
       <MDragbleItem v-for="(item, i) in com_drag_items" :key="i" :index="i" :active_index="-1" :option="item.drag_option">
 
@@ -20,6 +21,10 @@
     name: "MakeScreen",
     components: { MDragbleBox, MDragbleItem, MCart },
     props:{
+      haveback:{
+        type:Boolean,
+        default:false
+      },
       drag_box_option:{
         type:Object,
         default: null
@@ -38,6 +43,9 @@
     },
 
     methods: {
+      back(){
+        this.$router.go(-1)
+      },
       //根据外边框计算缩放比例
       setZoom(){
         //获取原始大小

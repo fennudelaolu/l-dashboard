@@ -1,5 +1,5 @@
 /*系统配置*/
-export const api_url = 'api_url'
+export const SCREEN_OPTION = 'screen_option'
 
 export const LOGIN = 'login';
 export const USER = 'user';

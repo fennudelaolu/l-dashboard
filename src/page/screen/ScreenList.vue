@@ -8,7 +8,9 @@
       <div v-if="act_screen!=null" class="screen-list-right-top" >
         <span class="title" >{{act_screen.name}}</span>
         <div  class="btn-group g-fr">
-          <Button  disabled>全屏</Button>
+
+
+          <Button @click="previewScreen" >全屏</Button>
           <Button  disabled>刷新数据</Button>
           <Button  disabled>编辑</Button>
         </div>
@@ -92,8 +94,12 @@
     },
     methods: {
       goMakeScreenPage(folder_name){
-
         this.$router.push({ name: '大屏幕制作' , params: { target_forder_name:folder_name }})
+      },
+
+      previewScreen(){
+        this.$store.commit(this.$store_type.SCREEN_OPTION, this.screen_option);
+        this.$router.push({name: '大屏幕展示'})
       },
 
       async init(){

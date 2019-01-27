@@ -34,9 +34,7 @@ axios.interceptors.request.use(
             return config.url.indexOf(item) != -1;
         })
         if (pass.length == 0) {
-
             if (promiseArr[config.url]) {
-                console.log("out"+config.url)
                 promiseArr[config.url]('请求频繁，操作取消')
                 promiseArr[config.url] = cancel
             } else {
@@ -103,33 +101,21 @@ axios.interceptors.response.use(response => {
     if (status) {
         switch (status) {
             case 401:
-                err.statusText = '未授权，请重新登录'
-                // 401 清除token信息并跳转到登录页面
-                /*store.commit(types.LOGOUT);*/
-                router.replace({
-                    path: '/login',
-                    query: {redirect: router.currentRoute.fullPath}
-                })
 
                 break;
             case 302:
                 err.statusText = '未授权，请重新登录'
+                console.log(err)
                 // 401 清除token信息并跳转到登录页面
                 /*store.commit(types.LOGOUT);*/
-                router.replace({
+               /* router.replace({
                     path: '/login',
                     query: {redirect: router.currentRoute.fullPath}
-                })
+                })*/
 
                 break;
             case 403:
-                err.statusText = '未授权，请重新登录'
-                // 401 清除token信息并跳转到登录页面
-                /*store.commit(types.LOGOUT);*/
-                router.replace({
-                    path: '/login',
-                    query: {redirect: router.currentRoute.fullPath}
-                })
+
 
                 break;
             case -500:

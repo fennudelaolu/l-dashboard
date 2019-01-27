@@ -13,7 +13,7 @@ let imgBaseUrl;
 
 
 if (process.env.NODE_ENV == 'development') {
-  baseUrl = 'http://47.102.114.92:8888';
+  baseUrl = 'http://127.0.0.1:5000';
   imgBaseUrl = 'http://cangdu.org:8001/img/';
 
 }else if(process.env.NODE_ENV == 'production'){

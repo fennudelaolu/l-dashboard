@@ -4,7 +4,7 @@
     <!--<svg id="testsvg" width="200" height="200"></svg>-->
       <div class="top">
         <div class="tile-box"></div>
-          <div class="box">
+        <div class="box">
             <svg xmlns="http://www.w3.org/2000/svg" class="backsvg"   viewBox="0 0 460 700"
 
             >
@@ -44,7 +44,7 @@
                 <span class="input-left"></span>
                 <input  type="text"
                         @keyup="key_login"
-                        :style="username===''||username==='账号'?'color:#fff':'color:black'"
+                        :style="username===''||username==='账号'?'color:#aaa':'color:black'"
                         @blur="username===''||username==='账号'?username='账号':''"
                         @focus="username===''||username==='账号'?username='':''"
                         v-model="username" >
@@ -53,24 +53,28 @@
               </div>
               <div class="input_row input2">
                 <span class="input-left"></span>
-                <input  type="password" @keyup="key_login"
+                <input  :type="password==='密码'?'text':'password'" @keyup="key_login"
                         :style="psd_color"
-                        @blur="password===''||password==='密码'?password='密码':''"
-                        @focus="password===''||password==='密码'?password='':''"
+                        @blur="password===''?password='密码':''"
+                        @focus="password=''"
                         v-model="password">
                 <span class="input-right"></span>
 
               </div>
 
+              <div style="color: red" class="input_row">{{erro_msg}}</div>
               <div class="input_row">
-                <div  @click="login" class="login-button">
+                <div  @click="checkLoginForm" class="login-button">
                   <span v-if="login_loading" class="spin"></span>
-                  登录
+                  登录/注册
                 </div>
               </div>
 
             </div>
           </div>
+        <div>
+
+        </div>
       </div>
       <div class="bottom">
         ©2019-2020 example
@@ -89,21 +93,38 @@
 
         data() {
             return {
-                username: '账号',
-                password: '密码',
+              username: '账号',
+              //Email正则
+              username_rule:/^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
+              password: '密码',
+              //用户名正则，4到16位（字母，数字，下划线）
+              password_rule:/^[a-zA-Z0-9_]{4,16}$/,
               psd_error:false,
-                login_loading: false,
+              login_loading: false,
 
-                notfounduser: false,
-                erro_msg: '',
+              notfounduser: false,
+              erro_msg: '',
             }
         },
         methods: {
             key_login($event){
                 if ($event.keyCode == 13) {
-                    this.login();
+                    this.checkLoginForm();
+
                 }
             },
+          checkLoginForm(){
+
+            if(!this.username_rule.test(this.username)){
+              this.erro_msg = '请输入正确邮箱格式';
+            }else if(!this.password_rule.test(this.password)){
+              this.erro_msg = '密码由4到16位字母、数字、下划线组成';
+            }else {
+              this.erro_msg = '';
+              this.login();
+            }
+            return false;
+          },
             async login() {
                 if(this.login_loading){return }
 
@@ -118,6 +139,7 @@
 
                 if(r.data.code == 200){
                   this.$store.commit('user', r.data.data);
+                  this.erro_msg = '';
                   this.$router.push({name: '首页'})
                 }else{
                   this.psd_error = true;
@@ -129,18 +151,19 @@
 
         },
         mounted() {
+          this.$store.commit('user', null);
         },
         computed:{
           info(){
             return this.$store.getters.user || {}
           },
           psd_color(){
-            if(this.password===''){
-              return 'color:#fff'
+            if(this.password==='密码'){
+              return 'color:#aaa'
             }else if(this.psd_error){
               return 'color:red'
             }else {
-              return 'color:black'
+
             }
           }
         }
@@ -159,12 +182,13 @@
     padding: 0;
     height: 100%;
     width: 100%;
+    min-width: 991px;
   }
 
   .login-view{
     width: 100%;
     height:100%;
-    min-width: 991px;
+
 
     .top{
         width: 100%;
@@ -175,7 +199,11 @@
           height: 64px;
           background: #ccccccaa;
         }
-
+      @media only screen and (max-width : 768px) {
+        .tile-box{
+          display: none;
+        }
+      }
         .box{
           $_box_w:360px;
           $_box_h:450px;
@@ -187,8 +215,8 @@
           width: $_box_w;
           height:$_box_h;
           border-radius: 15px;
-          background-color: #ffffff80;
-          background-color: rgba(255, 255, 255, 0.5);
+          background-color: #ffffff;
+          background-color: rgba(255, 255, 255, 1);
           div,span,svg{position:absolute;}
 
           .backsvg{
@@ -274,7 +302,7 @@
                 border-radius: $input_border_radius;
 
                 .spin{
-                  left:145px;
+                  left:160px;
                   top:12px;
 
                   width: 12px;
@@ -356,7 +384,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: url(../assets/login_bc.jpg)0% 0% / 100% 100% no-repeat;
+    background: url(../assets/login_bc1.jpg)0% 0% / 100% 100% no-repeat;
     -webkit-filter: blur(5px);
     -moz-filter: blur(5px);
     -ms-filter: blur(5px);

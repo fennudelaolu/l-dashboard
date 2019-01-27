@@ -87,6 +87,16 @@
     </div>
     <div class="g-fr head-nav-box">
       <ul class="bts-group">
+
+
+        <li class="btn-box">
+          <div class="frame-dropdown" @click="setContainer">
+            <div class="frame-dropdown-rel" >
+              <M_Icon  type="#icon_setting" style="margin: 0px auto; display: block;" :size="25" :color="'#fff'"  ></M_Icon>
+              <div>画布设置</div>
+            </div>
+          </div>
+        </li>
         <li class="btn-box">
           <div class="frame-dropdown" @click="preview">
             <div class="frame-dropdown-rel" >
@@ -125,7 +135,7 @@
     },
     data(){
       return {
-        screen_name:'未命名大屏幕',
+        screen_name:'点击这里设置屏幕名称',
 
         //上传文件配置
         options: {
@@ -465,6 +475,10 @@
       }
     },
     methods: {
+      //打开画布设置
+      setContainer(){
+        this.$emit('setContainer',{active_index:-1})
+      },
       goScreenListPage(){
         this.$router.push({ name: '大屏幕列表' , params: {  }})
       },

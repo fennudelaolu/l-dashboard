@@ -2,7 +2,7 @@
   <div class="layout">
     <header class="layout-header">
       <Header :ref="'header'" @save="saveScreenReady" @preview="previewScreen"  @addDragItem="addDragItem"
-              @setZIndex="setZIndex"
+              @setZIndex="setZIndex" @setContainer="clickItem"
               :active_index="drag_active_index">
       </Header>
     </header>
@@ -23,7 +23,7 @@
 
       <!--画布配置：页面样式-->
       <div v-if="act_drag == null" class="make-screen-center">
-        <div class="title">页面样式</div>
+        <div class="title">画布设置</div>
         <Collapse >
           <Panel name="1">
             页面尺寸
@@ -167,14 +167,14 @@
               </Input>
             </div>
           </TabPane>
-          <TabPane label="配置" name="name2"></TabPane>
+          <TabPane label="配置数据" :disabled="true" name="name2"></TabPane>
         </Tabs>
       </div>
 
       <div class="make-screen-right">
         <div class="title">数据</div>
         <div class="title">
-          <Select v-model="table" style="width:200px">
+          <Select v-model="table" style="width:200px" placeholder="可在数据表中添加数据">
             <OptionGroup v-for="(f_item,i) in table_tree" :key="i" :label="i">
               <Option v-for="(t_item,k) in f_item.child" :value="t_item" :key="k">{{ t_item.name }}</Option>
             </OptionGroup>
@@ -199,7 +199,6 @@
             {{item}}
           </div>
         </div>
-        <Button>231213</Button>
       </div>
     </section>
 
@@ -211,7 +210,7 @@
 
         <FormItem  label="文件夹">
           <Select  v-model="save_modal1.target_forder_name">
-            <Option  v-for="(item, i) in table_tree" :key="i" :value="i">{{i}}</Option>
+            <Option  v-for="(item, i) in screen_tree" :key="i" :value="i">{{i}}</Option>
           </Select>
         </FormItem>
 
@@ -220,7 +219,7 @@
         </FormItem>
       </Form>
       <div slot="footer">
-        <Button type="primary" @click="saveScreen" >保存</Button>
+        <Button type="primary" @click="saveScreen" :loading="save_loading" >保存</Button>
       </div>
     </Modal>
 
@@ -258,6 +257,8 @@
       return {
         //页面配置
         split:0.5,
+
+        screen_tree:[],
 
         table_tree:[],//数据表与表结构
         table:{},
@@ -313,14 +314,31 @@
 
       }
     },
+    mounted(){
+      this.getScreenTree()
+      this.getTableTree()
+    },
     methods: {
-      async init(){
+      init(){
 
+      },
+      async getScreenTree(){
         //获取左侧目录
-        let r = await DATA_MANAGER_API.findTree();
+        let r = await SCREEN_API.findTree();
         if(r.data.code == 200){
+          this.screen_tree = r.data.data || []
+        } else {
+          this.screen_tree  = []
+        }
+
+      },
+      async getTableTree(){
+        //获取左侧目录
+        let r = await DATA_MANAGER_API.findTree();console.log(r)
+
+        if(r.data.code == 200){
+
           this.table_tree = r.data.data || []
-          console.log( this.table_tree)
         } else {
           this.table_tree  = []
         }
@@ -341,8 +359,17 @@
           drag_box_option:this.drag_box_option,
           drag_items:this.drag_items,
         }
-
+        this.save_loading = true;
+        //todo 二次保存改为更新
         let r = await SCREEN_API.createScreen({ folder_name, screen_name, option, img, note})
+        if(r.data.code == 200){
+          this.$Message.success('保存成功');
+          this.save_modal1.show = false;
+        } else {
+           this.$Message.error(r.data.msg);
+        }
+        this.save_loading = false;
+
 
       },
       //截取画布图片
@@ -436,9 +463,7 @@
 
 
     },
-    mounted(){
-      this.init()
-    },
+
     filters:{
     },
     computed:{

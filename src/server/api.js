@@ -94,7 +94,7 @@ export const DATA_MANAGER_API = {
   async inputData({folder_name, table_name, up_data }){
     let param = {folder_name, table_name, up_data};
     let r = checkdata( await req.post_json(this.inputData_url,{ param}));
-    console.log(r)
+    return r
   },
 
   //分页获取数据
@@ -142,7 +142,6 @@ export const SCREEN_API = {
     let param = {
       folder_name, screen_name, option, img, note
     }
-    console.log(param)
     let r = checkdata( await req.post_json(this.createScreen_url,{param}) );
     return r;
   },
@@ -163,6 +162,8 @@ function checkdata(result) {
 
   let status = result.status
   if(status == 302){
+
+
     LOGIN_API.logout()
   }
   /*

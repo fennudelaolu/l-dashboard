@@ -11,6 +11,7 @@ Vue.use(Router)
 const routes = [
   {path: '/login' , name: '登陆', component: page('login')},
   {path: '/make_screen' , name: '大屏幕制作', props:true, component: page('screen/MakeScreen')},
+  {path: '/big_screen' , name: '大屏幕展示', props:true, component: page('screen/BigScreen')},
   {
     path: '/' , name: '首页', component: page('layout'), redirect:'/datasource',  meta: {requireAuth: true},
     children: [
